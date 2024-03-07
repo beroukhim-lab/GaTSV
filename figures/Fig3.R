@@ -9,7 +9,7 @@ print("Loading Libraries")
 library(data.table)
 library(ggplot2)
 library(scales)
-library("ggpubr")
+library(ggpubr)
 library(corrplot)
 library(Hmisc)
 library(rstudioapi)
@@ -255,8 +255,8 @@ som_bins_qvals <- matrix(correct_qval(somatic_binary_pval$qval),nrow = length(bi
 
 #ACROSS CLASS COMPARISONS#
 #applying Breslow-Day test for homogeneity of associations
-source("./edit_mh.R") #modified mantelhaen.test() function to handle integer overflow
-source("./breslow_day.R") #Breslow-day function [Programmed by Michael Hoehle]
+source("./editMH.R") #modified mantelhaen.test() function to handle integer overflow
+source("./breslowDay.R") #Breslow-day function [Programmed by Michael Hoehle]
 
 somatic_binary[,CLASS:="SOMATIC"]
 germline_binary[,CLASS:="GERMLINE"]
