@@ -24,6 +24,8 @@ print("Setting up function")
 
 read_extract_bedpe <- function(bedpe_filename) {
   # Assuming the filepath looks like /[long path]/[SAMPLE].[extra].bedpe
+  # Note, the "sample" column should contain "germline" or "somatic" as a substring 
+  # if you want the catalogue to separate the sample SVs into germline and somatic
   cur_sample <- basename(bedpe_filename)
   cur_sample <- strsplit(cur_sample, split = "[.]")[[1]][1]
   
