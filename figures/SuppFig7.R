@@ -6,6 +6,7 @@
 
 print("Loading Libraries")
 library(signature.tools.lib)
+library(rstudioapi)
 library(tidyverse)
 
 # First convert the total_output_list from bedpeToSignatures.R by taking only the 
