@@ -73,7 +73,7 @@ dev.off()
 
 pdf(paste0(output_dir,'SuppFig4b.pdf'))
 #gnomad_dist at 1e9 is an artificial distance fixed for completeness. Refer to Manuscript Methods.
-gg <- ggplot(total_sheet[gnomad_dist!=1e9,], aes(x=CLASS, y = gnomad_dist, fill = CLASS))  + geom_violin(linewidth=0.5)  + 
+gg <- ggplot(total_sheet[gnomad_dist!=2e9,], aes(x=CLASS, y = gnomad_dist, fill = CLASS))  + geom_violin(linewidth=0.5)  + 
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),labels = trans_format("log10", math_format(10^.x))) +
   theme+scale_fill_manual(values=c("#ADDBC6", "#ADDBC6", "#F29774","#F29774"))+
   ylab('Distance to Reference Germline')

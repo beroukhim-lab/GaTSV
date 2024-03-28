@@ -54,7 +54,7 @@ g
 dev.off()
 
 pdf(paste0(output_dir,'SuppFig5b'))
-gg <- ggplot(pHGG_testset[gnomad_dist!=1e9,], aes(x=CLASS, y = gnomad_dist, fill = CLASS))+geom_violin()  + 
+gg <- ggplot(pHGG_testset[gnomad_dist!=2e9,], aes(x=CLASS, y = gnomad_dist, fill = CLASS))+geom_violin()  + 
   scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),labels = trans_format("log10", math_format(10^.x)))+
   theme +ylab("Distance to Reference Germline")+scale_fill_manual(values=c("#ADDBC6","#F29774"))
 gg
