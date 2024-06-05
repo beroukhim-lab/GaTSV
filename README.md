@@ -10,18 +10,18 @@ All preprocessing and classification scripts are given in the `/scripts` directo
 ## Script Dependencies
 At the time of the following package versions were used to develop our script. Note, this may not include our figure codes. 
 
-- BiocGenerics 0.44.0
-- caTools 1.18.2 
-- data.table 1.15.2
-- e1071 1.7-14
-- GenomeInfoDb 1.34.9
-- GenomicRanges 1.50.2
-- gUtils 0.2.0
-- IRanges 2.32.0
-- parallel 4.2.3
-- rlang 1.1.3
-- ROCR 1.0-11
-- rstudioapi 0.15.0
-- S4Vectors 0.36.2
-- stats4 4.2.3
-- stringr 1.5.1
+- `BiocGenerics` 0.44.0
+- `caTools` 1.18.2 
+- `data.table` 1.15.2
+- `e1071` 1.7-14
+- `GenomeInfoDb` 1.34.9
+- `GenomicRanges` 1.50.2
+- `gUtils` 0.2.0
+- `IRanges` 2.32.0
+- `parallel` 4.2.3
+- `rlang` 1.1.3
+- `ROCR` 1.0-11
+- `rstudioapi` 0.15.0
+- `S4Vectors` 0.36.2
+- `stats4` 4.2.3
+- `stringr` 1.5.1
