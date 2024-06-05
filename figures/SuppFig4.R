@@ -21,9 +21,9 @@ output_dir <- "./out/"
 
 print("Loading Data")
 # The following lines import the necessary data
-test_scaled <- readRDS("../data/20231025_longtestscaled.rds")
-test_set <- readRDS("../data/20230913_longtest.rds")
-classifier_radial <- readRDS("../data/20231025_finalsvm.rda")
+test_scaled <- readRDS("../data/test_set_scaled.rds")
+test_set <- readRDS("../data/test_bedpe.rds")
+classifier_radial <- readRDS("../svm/GaTSV.rda")
 total_sheet <- readRDS("../data/total_sheet.rds")
 
 

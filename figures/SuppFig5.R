@@ -22,7 +22,7 @@ output_dir <- "./out/"
 print("Loading Data")
 # The following lines import the necessary data
 total_sheet <- readRDS("../data/total_sheet.rds")
-pHGG_testset <- readRDS('../data/pHGG_dataset.rds')
+pHGG_testset <- readRDS('../data/pHGG_bedpe.rds')
 pHGG_metadata <- fread('../data/pHGG_metadata.txt')
 
 ##plotting

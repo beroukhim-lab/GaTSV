@@ -21,10 +21,10 @@ output_dir <- "./out/"
 
 print("Loading Data")
 # The following lines import the necessary data
-final_svm <- readRDS("../data/20231025_finalsvm.rda")
-tcga_cohort_metadata <- fread("../data/tcga_cohort_metadata.csv")
-test_scaled <- readRDS("../data/20231025_longtestscaled.rds")
-test_bedpe <- readRDS("../data/test_set_with_ancestry.rds")
+final_svm <- readRDS("../svm/GaTSV.rda")
+tcga_cohort_metadata <- fread("../data/cohort_metadata.csv")
+test_scaled <- readRDS("../data/test_set_scaled.rds")
+test_bedpe <- readRDS("../data/test_bedpe.rds")
 
 print("Fix Data")
 # We modify a dataframe so that it is compatible with our code below
