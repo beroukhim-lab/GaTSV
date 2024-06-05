@@ -1,3 +1,3 @@
-all_lesions.conf_95.rmcnv.pt_170207.txt.gz from https://dcc.icgc.org/releases/PCAWG/consensus_cnv/GISTIC_analysis
 1-s2.0-S1535610820302117-mmc2.xlsx from Carrot-Zhang et al. 2020 (Comprehensive Analysis of Genetic Ancestry and Its Molecular Correlates in Cancer), https://gdc.cancer.gov/about-data/publications/CCG-AIM-2020 
-43018_2020_27_MOESM3_ESM.xlsx from Degasperi et al. 2020 (A practical framework and online tool for mutational signature analyses show intertissue variation and driver dependencies), we used S5
+43018_2020_27_MOESM3_ESM.xlsx from Degasperi et al. 2020 (A practical framework and online tool for mutational signature analyses show intertissue variation and driver dependencies), we used S5 (this is renamed as refsig_sheet.csv)
+tcga_wgs_biospecimen_metadata_aliquot.tsv was downloaded from GDC. It contains the biospcimen aliquot data for TCGA samples
