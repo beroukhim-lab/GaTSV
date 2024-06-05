@@ -46,32 +46,75 @@ theme <- theme(panel.background = element_blank(),
 
 
 pdf(paste0(output_dir,'SuppFig1a.pdf'))
-gg <- ggplot(total_sheet[svtype =="INV"], aes(x =SPAN)) +  geom_density(aes(fill=CLASS), alpha = 0.1)  + 
-  scale_x_log10(breaks = trans_breaks("log10", function(x) 10^x),labels = trans_format("log10", math_format(10^.x))) +
-  labs(title = 'INV')+theme+scale_fill_manual(values=c("#ADDBC6","#F29774"))
-gg
-dev.off()
-
-pdf(paste0(output_dir,'SuppFig1b.pdf'))
 gg <- ggplot(total_sheet, aes(x =reptime)) +  geom_density(aes(fill=CLASS), alpha = 0.1)  + scale_x_continuous() +
   theme+scale_fill_manual(values=c("#ADDBC6","#F29774"))
 gg
 dev.off()
 
-pdf(paste0(output_dir,'SuppFig1c.pdf'))
+pdf(paste0(output_dir,'SuppFig1b.pdf'))
 gg <- ggplot(total_sheet[insertion_len<10,], aes(x =insertion_len)) +  geom_density(aes(fill=CLASS), alpha = 0.1,bw=0.2)  + scale_x_continuous() +
   theme+scale_fill_manual(values=c("#ADDBC6","#F29774"))
 gg
 dev.off()
 
-pdf(paste0(output_dir,'SuppFig1d.pdf'))
+pdf(paste0(output_dir,'SuppFig1c.pdf'))
 gg <- ggplot(total_sheet, aes(x =hom_gc)) +  geom_density(aes(fill=CLASS), alpha = 0.1)  + scale_x_continuous() +
   theme+scale_fill_manual(values=c("#ADDBC6","#F29774"))
 gg
 dev.off()
 
-pdf(paste0(output_dir,'SuppFig1e.pdf'))
+pdf(paste0(output_dir,'SuppFig1d.pdf'))
 gg <- ggplot(total_sheet, aes(x =insertion_gc)) +  geom_density(aes(fill=CLASS), alpha = 0.1)  + scale_x_continuous() +
   theme+scale_fill_manual(values=c("#ADDBC6","#F29774"))
 gg
+dev.off()
+
+pdf(paste0(output_dir,'SuppFig1e.pdf'))
+ggplot(data=total_sheet[svtype!='INTER',], aes(x=CLASS, y=SPAN,fill=CLASS)) +
+  geom_violin() + scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                                labels = trans_format("log10", math_format(10^.x)))+
+  facet_grid(. ~ svtype) +
+  facet_wrap("svtype", ncol = 3) +
+  theme +theme(axis.text.x=element_blank(), axis.ticks.x=element_blank())+
+  scale_fill_manual(values=c("#ADDBC6","#F29774")) 
+dev.off()
+
+#differentiate the apparant peaks between deletions and inversions between 10^2 and 10^3
+pdf(paste0(output_dir,'SuppFig1f.pdf'))
+ggplot(total_sheet[(svtype == 'DEL'|svtype == 'INV')&SPAN<500], aes(x =SPAN)) +  
+  geom_density(aes(fill=CLASS), alpha = 0.1)  + 
+  facet_grid(. ~ svtype) +
+  facet_wrap("svtype", ncol = 2) +
+  theme+scale_fill_manual(values=c("#ADDBC6","#F29774"))
+dev.off()
+
+#the homology length by deletion span plot
+pdf(paste0(output_dir,'SuppFig1g.pdf'))
+ggplot(total_sheet[svtype=="DEL" & homlen %in% c(0:20),], aes(x=homlen, y=SPAN)) +
+  geom_jitter(aes(color=CLASS, alpha=CLASS),width=0.20) +
+  ylim(c(0, 1000)) +
+  labs(x="MH Length (bp)", y="Deletion span") +
+  theme(text=element_text(size=12)) +
+  scale_alpha_manual(values=c(0.01, 0.05)) +
+  guides(alpha="none") +scale_color_manual(values=c("#ADDBC6","#F29774"))+
+  labs(color="")+theme+theme(panel.border=element_blank(),
+                             axis.line.x = element_line(linewidth = 0.5, linetype = "solid", colour = "black"),
+                             axis.line.y = element_line(linewidth = 0.5, linetype = "solid", colour = "black"))
+plot.new()
+#deduplicate the total sheet and run this code again just as an alternate version
+total_sheet_unique <- unique(total_sheet, by = c("chrom1", "chrom2", "start1", "start2", 
+                                                 "strand1", "strand2", "homlen", 
+                                                 "HOMSEQ", "svtype",'CLASS'))
+ggplot(total_sheet_unique[svtype=="DEL" & homlen %in% c(0:20),], aes(x=homlen, y=SPAN)) +
+  geom_jitter(aes(color=CLASS, alpha=CLASS)) +
+  ylim(c(0, 1000)) +
+  labs(x="MH Length (bp)", y="Deletion span") +
+  theme(text=element_text(size=12)) +
+  scale_alpha_manual(values=c(0.01, 0.05)) +
+  guides(alpha="none") +
+  scale_color_manual(values=c("#ADDBC6","#F29774"))+ggtitle("Unique SVs")+
+  labs(color="")+theme_minimal()+theme+theme(panel.border=element_blank(),
+                                             axis.line.x = element_line(linewidth = 0.5, linetype = "solid", colour = "black"),
+                                             axis.line.y = element_line(linewidth = 0.5, linetype = "solid", colour = "black"))
+
 dev.off()

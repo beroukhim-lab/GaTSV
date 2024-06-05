@@ -19,10 +19,11 @@ output_dir <- "./out/"
 
 print("Loading Data")
 # The following lines import the necessary data
+total_sheet <- readRDS("../data/total_sheet.rds")
 tcga_cohort_metadata <- fread("../data/cohort_metadata.csv")
-test_scaled <- readRDS("../data/20231025_longtestscaled.rds")
-test_set <- readRDS("../data/20230913_longtest.rds")
-classifier_radial <- readRDS("../data/20231025_finalsvm.rda")
+test_scaled <- readRDS("../data/test_set_scaled.rds")
+test_set <- readRDS("../data/test_bedpe.rds")
+classifier_radial <- readRDS("../svm/GaTSV.rda")
 
 ###plotting
 theme <- theme(panel.background = element_blank(),
@@ -42,7 +43,17 @@ theme <- theme(panel.background = element_blank(),
                legend.text = element_text(size=15),
                legend.key.height = unit(4, 'lines'))
 
-pdf(paste0(output_dir,'SuppFig3a.pdf'),width = 10,height = 6)
+
+##GNOMAD DISTANCE##
+pdf(paste0(output_dir,'SuppFig3a.pdf'))
+g <- ggplot(total_sheet[gnomad_dist!=2e9,], aes(x=CLASS, y = gnomad_dist, fill = CLASS))  + geom_violin() + 
+  scale_y_log10(breaks = trans_breaks("log10", function(x) 10^x),
+                labels = trans_format("log10", math_format(10^.x)))+ scale_fill_manual(values=c("#ADDBC6","#F29774")) +
+  theme +ylab("Distance to Reference Germline")
+g
+dev.off()
+
+pdf(paste0(output_dir,'SuppFig3b.pdf'),width = 10,height = 6)
 g<-ggplot(data = tcga_cohort_metadata, aes(x = project_code, y = somatic_sv_count,fill='project_code')) + #have to remove the outliers(>=3999 som SVs) to see trend
   geom_boxplot(aes(group = project_code))+theme_classic()
 gg<- g+theme(axis.text=element_text(size=25,face="plain"),
@@ -66,7 +77,18 @@ aggregate_pred[,ppv:= called_actual/pred_class]
 colnames(aggregate_pred)[1] <- 'uid' #change column name to match the metadata to enable merging
 aggregate_pred <- merge(aggregate_pred,tcga_cohort_metadata[,c('uid','project_code')],by='uid')
 
-pdf(paste0(output_dir,'SuppFig3b.pdf'),width=7, height=5)
+pdf(paste0(output_dir,'SuppFig3c.pdf'),width=7, height=5)
 ggplot(aggregate_pred,aes(x=sv_class,y=ppv,col=project_code))+geom_point()+ scale_x_log10()+theme+xlab('Somatic SVs in Test Set')+
   ylab("Positive Predictive Value")
+dev.off()
+
+pdf(paste0(output_dir,'SuppFig3d.pdf'),width = 10,height = 6)
+g<-ggplot(data = perf_by_tt, aes(x =project_code, y = `Accuracy Value`)) +
+  geom_boxplot(aes(fill = project_code, group = project_code))+theme_classic()
+gg<- g+theme(axis.text=element_text(size=25,face="bold"),
+             axis.title=element_text(size=17,face="bold"),
+             axis.text.x= element_text(size=17,face="bold", hjust = 1, vjust = 1, angle = 45,colour = "black"),
+             axis.text.y= element_text(size=18,face = 'plain'),
+             legend.title = element_blank())+ theme(legend.position="none")+ ylab("Accuracy") +ylim(0,1)
+gg
 dev.off()
