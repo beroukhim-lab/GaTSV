@@ -5,7 +5,7 @@ The GaTSV (Germline and Tumor SV) classifier is an SVM that is able to distingui
 In order to recreate the figures from our paper, you can run the code in the `/figures` directory. The code is organized by figure for easy reference. Some data used to generate figures require access to TCGA patient data, so these are not included. Please reach out to us for more information.
 
 ## Running the classifier
-All preprocessing and classification scripts are given in the `/scripts` directory. The GaTSV rda object is contained in the `/svm` directory. The `process_classifty.R` script will process a given metadata file and SvABA vcf into a bedpe file, and it will classify each variant as germline or somatic. Currently, an example vcf is given within the script, as seen in lines 51 and 52 or the `process_classify.R ` script, so running this code will classify the variants in this vcf. Replacing this file with a similar file containing variants of interest will classify SVs and output a bedpe. 
+All preprocessing and classification scripts are given in the `/scripts` directory. The GaTSV rda object is contained in the `/svm` directory. The `process_classify.R` script will process a given metadata file and SvABA vcf into a bedpe file, and it will classify each variant as germline or somatic. Currently, an example vcf is given within the script, as seen in lines 51 and 52 or the `process_classify.R ` script, so running this code will classify the variants in this vcf. Replacing this file with a similar file containing variants of interest will classify SVs and output a bedpe. 
 
 ## Script Dependencies
 At the time of the following package versions were used to develop our script. Note, this may not include our figure codes. 
