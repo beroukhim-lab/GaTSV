@@ -132,11 +132,11 @@ build_bedpe_with_metadata <- function(merged_dt) {
 
 
 filter <- function(lof_pth, sample) {
-
+  
   vcf_dt <- vcf_to_dt(lof_pth, sample)
-
+  
   vcf_bedpe <- build_bedpe_with_metadata(vcf_dt)
-    
+  
   vcf_bedpe[, NALT_SR := unlist(strsplit(TUMOR, ":"))[3], by = 'TUMOR']
   vcf_bedpe[, NALT := unlist(strsplit(TUMOR, ":"))[1], by = 'TUMOR']
   
@@ -561,7 +561,7 @@ add_last_feat <- function(df) {
   sample_svs <- as.data.table(table(df$sample)) #number of SVs in each sample 
   colnames(sample_svs) <- c('sample','num_sv_sample')
   df <- merge(df,sample_svs,by='sample')
-
+  
   return(df)
 }
 
