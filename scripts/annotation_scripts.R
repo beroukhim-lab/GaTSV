@@ -1,11 +1,11 @@
 ### Author: Wolu Chukwu, wchukwu@broadinstitute.org, Siyun Lee, siyun@broadinstitute.org, Alexander Crane, acrane@broadinstitute.org, Shu Zhang, shu@broadinstitute.org
 ### Contact: Simona Dalin, sdalin@broadinstitute.org, Frank Dubois, frank.dubois@charite.de
-### Date last updated: July 10, 2024
+### Date last updated: July 11, 2024
 ### License: GNU GPL2, Copyright (C) 2024 Dana-Farber Cancer Institute
 ### See README for guide on these scripts and dependencies
 
 #all source functions for pre-processing
-vcf_to_dt <- function(vcf_path) {
+vcf_to_dt <- function(vcf_path,sample_name) {
   cat(paste0(vcf_path, "\n"))
   if (!file.exists(vcf_path)) {
     print(paste("File does not exist",vcf_path))
@@ -27,7 +27,7 @@ vcf_to_dt <- function(vcf_path) {
   cat("Gathering Metadata...\n")
   if ("INFO" %in% colnames(vcf_dt) ) {
     vcf_dt[, SPAN := as.numeric(gsub(".*?SPAN=([-0-9]+).*","\\1",INFO))]
-    vcf_dt$sample = gsub("\\.[^\\.]+$","",basename(vcf_path))
+    vcf_dt$sample = sample_name
     vcf_dt[, uid := gsub("([0-9]+):(1|2)", "\\1", ID)]
     vcf_dt[, EVDNC := gsub(".*?EVDNC=([A-Z]+).*", "\\1", INFO)]
     vcf_dt[, MAPQ := as.integer(gsub(".*?;MAPQ=([0-9]+).*", "\\1", INFO))]
@@ -63,7 +63,7 @@ vcf_to_dt <- function(vcf_path) {
   canonical_contigs <- c(c(1:24),c('X','Y'),paste0('chr',c(1:24)),paste0('chr',c('X','Y')))
   bad.ix <- vcf_dt[!(seqnames %in% canonical_contigs), uid] #modify this to only include canonical chromosomes
   vcf_dt <- vcf_dt[!uid %in% bad.ix]
-  vcf_dt[, sid := basename(tools::file_path_sans_ext(vcf_path))]
+  vcf_dt[, sid := sample_name]
   vcf_dt[, seqnames:= ifelse(grepl('chr',seqnames),seqnames,paste0("chr",seqnames)), by=uid]
   return(vcf_dt)
 }
@@ -131,9 +131,9 @@ build_bedpe_with_metadata <- function(merged_dt) {
 }
 
 
-filter <- function(lof_pth) {
+filter <- function(lof_pth, sample) {
   
-  vcf_dt <- vcf_to_dt(lof_pth)
+  vcf_dt <- vcf_to_dt(lof_pth, sample)
   
   vcf_bedpe <- build_bedpe_with_metadata(vcf_dt)
   
@@ -494,10 +494,9 @@ check_tp53 <- function(bedpe){
   return(bedpe[,tp53_status:=mut_status])
 }
 
-process_file <- function(file,n_cores,genome,output_path='./') {
+process_file <- function(file,sample, n_cores,genome,output_path='./') {
   
-  #file = commandArgs(T)[1] #formatted as 'path_to_file'
-  filt_file <- suppressWarnings(filter(file))
+  filt_file <- suppressWarnings(filter(file, sample))
   
   bedpe <- filt_file
   bedpe[, chrom1 := gsub('chr','',chrom1)]
@@ -578,12 +577,11 @@ features_toscale<-c('log_homlen', 'log_insertion_len', 'log_SPAN', 'log_gnomad_d
                     'hom_gc', 'insertion_gc', 'log_line_dist', 'log_sine_dist', 'log_num_sv_sample', 'CN_annot', 'exon_annot',
                     'log_sv_dist','log_sv_count_5Mbp', 'sv_reptime_left','sv_reptime_right','tp53_status')
 
-run_GaTSV <- function(file_path,n_cores=1,genome='hg19',output_path = './'){
+run_GaTSV <- function(file_path,sample,n_cores=1,genome='hg19',output_path = './'){
   cat(paste0('Reference genome: ',genome,'\n'))
   cat(paste0('Writing outputs to: ', output_path,'\n'))
   cat(paste0('Using ',n_cores,' core(s) for parallel processing \n'))
-  
-  tmp <- process_file(file = file_path, n_cores =n_cores,genome=genome,output_path=output_path)
+  tmp <- process_file(file = file_path, sample=sample, n_cores =n_cores,genome=genome,output_path=output_path)
   cutoff_prob <-  0.2684 #optimal tpr+ppv cutoff
   
   test <- add_last_feat(tmp)
@@ -616,5 +614,5 @@ run_GaTSV <- function(file_path,n_cores=1,genome='hg19',output_path = './'){
   filename <- test$sample[1]
   write.table(test, paste0(output_path,filename,'_classified.bedpe'), row.names = F, col.names = T, sep = "\t", quote = F)
   cat('done.')
-  return(test)
+  #return(test)
 }
