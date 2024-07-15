@@ -46,6 +46,7 @@ GaTSV <- readRDS(here("svm/GaTSV.rda")) #svmobject
 #running the classifier on example data
 metadata <- fread(here("data/example_metadata.txt")) #metadata file that contains the sample_ids (same as 'sample' input) and associated tp53_mutation_status
 file_path <- here("data/example.sv.vcf") #replace with desired vcf path
+sample <- "example"
 run_GaTSV(file_path,sample,n_cores=1,genome='hg19',output_path = '../out/')
 
 ##Two output files are generated and stored in the output_path provided under the names:
