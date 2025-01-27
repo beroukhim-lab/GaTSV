@@ -19,6 +19,7 @@ suppressPackageStartupMessages(require(ROCR))
 suppressPackageStartupMessages(require(S4Vectors))
 suppressPackageStartupMessages(require(stats4))
 suppressPackageStartupMessages(require(stringr))
+suppressPackageStartupMessages(require(rtracklayer))
 
 print("Setting Working Directory")
 setwd('/scripts/')
@@ -37,7 +38,10 @@ hg19_exons=readRDS('../data/gencode.exons.hg19.rds')
 hg38_genes=readRDS('../data/gencode.genes.hg38.rds')
 hg38_exons=readRDS('../data/gencode.exons.hg38.rds')
 reptimedata_hg19 = readRDS('../data/reptime.hg19.rds')
-reptimedata_hg38 = readRDS('../data/reptime.hg38.rds')
-scaling_mat <- fread("../data/scalingmatrix.txt")
+hg38Tohg19.chain = import.chain('data/hg38ToHg19.over.chain') #downloaded from http://hgdownload.soe.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz
+reptimedata_hg19@seqnames@values <- paste0('chr',reptimedata_hg19@seqnames@values)
+reptimedata_hg19@seqinfo@seqnames <- paste0('chr',reptimedata_hg19@seqinfo@seqnames)
+reptimedata_hg19@seqnames@values <- as.factor(reptimedata_hg19@seqnames@values)
 
+scaling_mat <- fread("../data/scalingmatrix.txt")
 GaTSV <- readRDS("../svm/GaTSV.rda") #svmobject

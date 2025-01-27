@@ -33,3 +33,4 @@ At the time of the following package versions were used to develop our script. N
 - `stringr` 1.5.1
 - - `here` 1.0.1
 - `optparse` 1.7.4
+- `rtracklayer` 1.58.0

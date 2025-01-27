@@ -360,7 +360,7 @@ find_closest_sv = function(i, bedpe_l){
       check_str2_overlap <- ref_sub_ranges_chr2 %&% row_l_str2
       ref_sub_chr2[,str2_dist_l := ifelse(length(check_str2_overlap)>=1, 0, min(abs(as.numeric(start) - as.numeric(as.character(row_l$start2))), abs(as.numeric(end) - as.numeric(as.character(row_l$start2)))))]
     }
-    ref_sub <- cbind(ref_sub_chr1,ref_sub_chr2$str2_dist_l)
+    ref_sub <- cbind(ref_sub_chr1[1:min(nrow(ref_sub_chr1),nrow(ref_sub_chr2))],ref_sub_chr2$str2_dist_l[1:min(nrow(ref_sub_chr1),nrow(ref_sub_chr2))])
     colnames(ref_sub) <- c('seqnames','start','end','str1_dist_l','str2_dist_l')
   }
   
@@ -394,45 +394,60 @@ count_sv_5mbp = function (i,bedpe_l) {
   return (cbind(row_l, sv_count_5Mbp))
 }
 
-rep_time <- function(i,bedpe,genome=NULL){
-  #cat(i, '\n')
-  row_l <- bedpe[i,]
-  if(as.character(genome) == 'hg19') {
-    reptimedata = reptimedata_hg19
-  } else if (as.character(genome) == 'hg38') {
-    reptimedata = reptimedata_hg38
-  } else {
+rep_time <- function(itter,bedpe,genome=NULL){
+  row_l <- bedpe[itter,]
+  row_l[,chrom1:=paste0('chr',chrom1)];row_l[,chrom2:=paste0('chr',chrom2)]
+  
+  if(as.character(genome)=='hg38'){ #if hg38, liftover SV breakpoints to hg19
+    left_GRanges <- GRanges(row_l$chrom1,IRanges(as.numeric(as.character(row_l$start1)),width = 1))
+    right_GRanges <- GRanges(row_l$chrom2,IRanges(as.numeric(as.character(row_l$start2)),width = 1))
+    row_l_left = unlist(liftOver(left_GRanges, hg38ToHg19.chain))
+    row_l_right = unlist(liftOver(right_GRanges, hg38ToHg19.chain))
+  }
+  else if (as.character(genome)=='hg19'){
+    row_l_left <- GRanges(row_l$chrom1, IRanges(as.numeric(as.character(row_l$start1)),width=1))
+    row_l_right <- GRanges(row_l$chrom2, IRanges(as.numeric(as.character(row_l$start2)),width=1))
+  }else{
     stop('Please state hg19 or hg38 as genome')
   }
-  sub_ranges_reptime_left <- reptimedata[seqnames(reptimedata) == row_l$chrom1] 
+  
+  sub_ranges_reptime_left <- reptimedata_hg19[seqnames(reptimedata_hg19) == row_l$chrom1]
   if (is_empty(sub_ranges_reptime_left)){
     sv_reptime_left <- 0
-  } else{
-    row_l_left <- GRanges(row_l$chrom1, IRanges(as.numeric(as.character(row_l$start1)),width=1))
-    check_left_overlap <-  sub_ranges_reptime_left %&% row_l_left
-    check_left_overlap <- as.data.table(check_left_overlap)
-    check_left_overlap <- na.omit(check_left_overlap) #incase there are actually overlapping reference regions
+  }else{
+    check_left_overlap <-  gr2dt(sub_ranges_reptime_left %&% row_l_left)
+    check_left_overlap <- na.omit(check_left_overlap) #incase there are overlapping reference regions
     if (nrow(check_left_overlap)==0){ #if there are only NA values in the check_overlap datatable
       sv_reptime_left <- 0
     }else{
-      sv_reptime_left <- check_left_overlap$score
+      if (nrow(check_left_overlap)>1){
+        sv_reptime_left <- check_left_overlap[which.min(width),]$score[1] #if there are intervals that are tied for width, choose 1
+      }else{
+        sv_reptime_left <- check_left_overlap$score
+      }
     }
   }
-  sub_ranges_reptime_right <- reptimedata[seqnames(reptimedata) == row_l$chrom2]
+  
+  sub_ranges_reptime_right <- reptimedata_hg19[seqnames(reptimedata_hg19) == row_l$chrom2]
   if (is_empty(sub_ranges_reptime_right)){
     sv_reptime_right <- 0
-  } else{
-    row_l_right <- GRanges(row_l$chrom2, IRanges(as.numeric(as.character(row_l$start2)),width=1))
-    check_right_overlap <-  sub_ranges_reptime_right %&% row_l_right
-    check_right_overlap <- as.data.table(check_right_overlap)
-    check_right_overlap <- na.omit(check_right_overlap)
-    if (nrow(check_right_overlap)==0){
+  }else{
+    check_right_overlap <-  gr2dt(sub_ranges_reptime_right %&% row_l_right)
+    check_right_overlap <- na.omit(check_right_overlap) #incase there are overlapping reference regions
+    if (nrow(check_right_overlap)==0){ #if there are only NA values in the check_overlap datatable
       sv_reptime_right <- 0
     }else{
-      sv_reptime_right <- check_right_overlap$score
+      if (nrow(check_right_overlap)>1){
+        
+        sv_reptime_right <- check_right_overlap[which.min(width),]$score[1] #if there are intervals that are tied for width, choose 1
+      }else{
+        sv_reptime_right <- check_right_overlap$score
+      }
     }
+    
   }
-  return (cbind(row_l, sv_reptime_left, sv_reptime_right))
+  row_l[,chrom1:=gsub('chr','',chrom1)];row_l[,chrom2:=gsub('chr','',chrom2)]
+  return (cbind(row_l, sv_reptime_left, sv_reptime_right))    
 }
 
 annot_geneexon <- function(itter, bp, genome=NULL) {
