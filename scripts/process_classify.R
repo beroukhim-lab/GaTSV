@@ -20,7 +20,7 @@ suppressPackageStartupMessages(require(S4Vectors))
 suppressPackageStartupMessages(require(stats4))
 suppressPackageStartupMessages(require(stringr))
 suppressPackageStartupMessages(require(here))
-
+suppressPackageStartupMessages(require(rtracklayer))
 
 source(here('scripts/annotation_scripts.R')) #here defaults to root directory where .git is located
 
@@ -36,9 +36,13 @@ hg19_genes = readRDS(here('data/gencode.genes.hg19.rds'))
 hg19_exons=readRDS(here('data/gencode.exons.hg19.rds'))
 hg38_genes=readRDS(here('data/gencode.genes.hg38.rds'))
 hg38_exons=readRDS(here('data/gencode.exons.hg38.rds'))
-reptimedata_hg19 = readRDS(here('data/reptime.hg19.rds'))
-reptimedata_hg38 = readRDS(here('data/reptime.hg38.rds'))
 scaling_mat <- fread(here("data/scalingmatrix.txt"))
+reptimedata_hg19 = readRDS(here('data/reptime.hg19.rds'))
+hg38Tohg19.chain = import.chain('data/hg38ToHg19.over.chain') #downloaded from http://hgdownload.soe.ucsc.edu/goldenPath/hg38/liftOver/hg38ToHg19.over.chain.gz
+reptimedata_hg19@seqnames@values <- paste0('chr',reptimedata_hg19@seqnames@values)
+reptimedata_hg19@seqinfo@seqnames <- paste0('chr',reptimedata_hg19@seqinfo@seqnames)
+reptimedata_hg19@seqnames@values <- as.factor(reptimedata_hg19@seqnames@values)
+
 
 GaTSV <- readRDS(here("svm/GaTSV.rda")) #svmobject
 
@@ -47,7 +51,7 @@ GaTSV <- readRDS(here("svm/GaTSV.rda")) #svmobject
 metadata <- fread(here("data/example_metadata.txt")) #metadata file that contains the sample_ids (same as 'sample' input) and associated tp53_mutation_status
 file_path <- here("data/example.sv.vcf") #replace with desired vcf path
 sample <- "example"
-run_GaTSV(file_path,sample,n_cores=1,genome='hg19',output_path = '../out/')
+run_GaTSV(file_path,sample,n_cores=1,genome='hg19',output_path = './out/')
 
 ##Two output files are generated and stored in the output_path provided under the names:
 #'filename'_processed.bedpe 

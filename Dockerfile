@@ -2,12 +2,19 @@ FROM rocker/tidyverse:4.2
 
 LABEL AUTHORS='Wolu Chukwu:woluchukwu@broadinstitute.org, Siyun Lee:slee@broadinstitute.org. Alexander Crane: ajc406@case.edu, Shu Zhang: shu@broadinstitute.org' 
 
+RUN apt-get update && apt-get install -y \
+    libcurl4-openssl-dev \
+    libxml2-dev \
+    libssl-dev \
+    libbz2-dev \
+    liblzma-dev \
+    zlib1g-dev \
+    libncurses5-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN Rscript -e 'requireNamespace("BiocManager"); BiocManager::install(version="3.16");' \
-&& Rscript -e 'requireNamespace("BiocManager"); BiocManager::install("BiocGenerics")' \
-&& Rscript -e 'requireNamespace("BiocManager"); BiocManager::install("GenomeInfoDb")' \
-&& Rscript -e 'requireNamespace("BiocManager"); BiocManager::install("GenomicRanges")' \
-&& Rscript -e 'requireNamespace("BiocManager"); BiocManager::install("IRanges")' \
-&& Rscript -e 'requireNamespace("BiocManager"); BiocManager::install("S4Vectors")' \
+&& Rscript -e 'BiocManager::install(c("BiocGenerics", "GenomeInfoDb", "GenomicRanges", "IRanges", "S4Vectors","Rhtslib","Rsamtools","GenomicAlignments","rtracklayer"))' \
 && R -e "install.packages('caTools',dependencies=TRUE, version='1.18.2',repos='https://cran.rstudio.com')" \
 && R -e "install.packages('data.table', dependencies = TRUE, version='1.15.2',repos='https://cran.rstudio.com')" \
 && R -e "install.packages('e1071', dependencies = TRUE, version='1.7-14',repos='https://cran.rstudio.com')" \
