@@ -29,10 +29,12 @@ RUN Rscript -e 'requireNamespace("BiocManager"); BiocManager::install(version="3
 && mkdir -p /scripts \
 && mkdir -p /data \
 && mkdir -p /svm \
+&& mkdir -p /svaba_ref \
 && mkdir -p /out
 
 COPY data/ /data
 COPY scripts/ /scripts
 COPY svm/ /svm
+COPY svaba_ref/ /svaba_ref
 
 RUN chmod +x /scripts/gaTSV_run.sh
