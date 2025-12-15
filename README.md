@@ -23,8 +23,13 @@ NOTE: The number of SVs in `[sample name]_processed.bedpe` may not match the num
 
 3. These results can be compared with the TCGA and external pHGG dataset results from our manuscript. Although the specific features can vary at an individual level, we can typically expect over a 10:1 ratio of germline to somatic events, the SPAN of somatic SVs to be much larger than germline events on average, and most of the germline events to be deletions, while somatic events are more evenly distributed across all SV types. As mentioned previously, these analyses were conducted on a population level, so individual SVs may not always follow these trends. The following figures were generated from the GaTSV calls on the pHGG dataset:
 
-![Alt text](https://u.cubeupload.com/snlee12/Screenshot20251215at.png)
-![Alt text](https://u.cubeupload.com/snlee12/9a7Screenshot20251215at.png)
+
+
+<div align="center">
+  <img src="https://u.cubeupload.com/snlee12/Screenshot20251215at.png" height="400" alt="SV Type Pie Chart">
+  <img src="https://u.cubeupload.com/snlee12/9a7Screenshot20251215at.png" height="400" alt="SV Count Distribution">
+</div>
+
 
 ## Script Dependencies
 At the time of the following package versions were used to develop our script. Note, this may not include our figure codes. 
