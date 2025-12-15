@@ -12,6 +12,19 @@ The GaTSV docker can be accessed using the pull command `docker pull wchukwu/gat
 
 An example run is given as `docker run -it -v '$(pwd)\GaTSV\data\example_metadata.txt:/data/metadata.txt' -v '$(pwd)\GaTSV\data\example.sv.vcf:/data/input_vcf.vcf' -v '$(pwd)\GaTSV\out\:/out/' wchukwu/gatsv_docker:latest /scripts/gaTSV_run.sh example.sv hg19 1` 
 
+## Expected Outcomes
+1. The GaTSV classifier generates two output files per sample. These are:
+- `[sample name]_processed.bedpe`: This file contains SVs that passed our internal QC metrics (as described in our manuscript) and the feature annotations.
+- `[sample name]_classified.bedpe`: This file contains the class label for each classified SV under the `predicted_class` column. An SV is labeled as either `GERMLINE` or `SOMATIC`.
+
+NOTE: The number of SVs in `[sample name]_processed.bedpe` may not match the number of SVs in `[sample name]_classified.bedpe` because we require that SVs that are not translocations must be at least 1000bp in length before they can be confidently classified by the GaTSV classifier. SVs that do not meet these criteria will not be in `[sample name]_classified.bedpe`.
+
+2. These outputs will be stored in `C:\Users\your_profile\outputs` or in `/path/to/outputs`.
+
+3. These results can be compared with the TCGA and external pHGG dataset results from our manuscript. Although the specific features can vary at an individual level, we can typically expect over a 10:1 ratio of germline to somatic events, the SPAN of somatic SVs to be much larger than germline events on average, and most of the germline events to be deletions, while somatic events are more evenly distributed across all SV types. As mentioned previously, these analyses were conducted on a population level, so individual SVs may not always follow these trends. The following figures were generated from the GaTSV calls on the pHGG dataset:
+
+![Alt text](https://u.cubeupload.com/snlee12/Screenshot20251215at.png)
+![Alt text](https://u.cubeupload.com/snlee12/9a7Screenshot20251215at.png)
 
 ## Script Dependencies
 At the time of the following package versions were used to develop our script. Note, this may not include our figure codes. 
