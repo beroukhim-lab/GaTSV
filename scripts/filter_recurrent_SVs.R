@@ -3,8 +3,8 @@ library(GenomicRanges)
 library(igraph)
 library(data.table)
 
-sv_bedpe <- classified_bedpe
-slop_vec <- 10 #the window within which an SV is considered 'matching' to another SV
+sv_bedpe <- classified_bedpe[predicted_class=='SOMATIC',] #load the classified bedpe result from GaTSV and filter for somatic SVs
+slop <- 10 #the window within which an SV is considered 'matching' to another SV
 
 # Main loop
 max_iter <- 10
@@ -110,8 +110,7 @@ repeat {
   }
 }
 
-#Save output after loop completes
-#This stores the de-duplicated call set in sv_bedpe, and whether the solution converged (T) within the rounds of de-duplication
+#This stores the best available de-duplicated call set in sv_bedpe, and whether the solution converged (T) within the rounds of de-duplication
 saveRDS(
   list(
     sv_bedpe = sv_bedpe,
@@ -121,3 +120,4 @@ saveRDS(
     paste0("classified_bedpe_dedup_slop_", slop, ".rds")
   )
 )
+
