@@ -5,6 +5,7 @@ library(igraph)
 ## This script identifies SVs where both breakends overlap (within a specified slop)
 ## It then arranges SVs based on how many times they occur and removes the most recurrent ones
 ## until the target recurrence rate is met.
+## "Removed" SVs are re-labeled as GERMLINE in the predicted_class column.
 
 # Load your SV BEDPE data frame here
 # sv_bedpe <- readRDS("../data//CCLE356_classified.rds")
@@ -57,6 +58,8 @@ edges <- bind_rows(direct_pairs, swapped_pairs) %>%
 
 if (nrow(edges) == 0) {
   message("No overlapping SVs found at slop ", slop,'. Saving original data frame as deduplicated version.')
+  sv_bedpe <- sv_bedpe %>%
+    select(-sv_id)
   saveRDS(sv_bedpe, file.path(paste0("classified_bedpe_dedup_slop_", slop, "target_recurrence", target_recurrence, ".rds")))
   break
 }
@@ -82,7 +85,7 @@ pct_recurrent <- num_somatic_dup / num_somatic
 message(paste("Before filtering, ", round(pct_recurrent * 100, 2), '% of SVs are recurrent'))
 if (pct_recurrent <= target_recurrence) {
   sv_bedpe <- sv_bedpe %>%
-    select(-sv_id, SV_DUP_ID, GROUP_SIZE)
+    select(-sv_id, -SV_DUP_ID, -GROUP_SIZE)
   saveRDS(sv_bedpe, file.path(paste0("classified_bedpe_dedup_slop_", slop, "target_recurrence", target_recurrence, ".rds")))
   break
 }
@@ -97,13 +100,15 @@ dup_stats <- sv_bedpe %>%
   mutate(N_REMOVE = cumsum(N_OCCURRENCES)) %>%
   mutate(PCT_RECURRENT = (num_somatic_dup - N_REMOVE) / (num_somatic - N_REMOVE))
 
+# Start removing most recurrent SV groups until target recurrence is met
 cutoff_idx <- min(which(dup_stats$PCT_RECURRENT <= target_recurrence))
 svs_groups_to_remove <- dup_stats$SV_DUP_ID[1:cutoff_idx]
 pct_recurrent <- dup_stats$PCT_RECURRENT[cutoff_idx]
 
+# Mark SVs in these groups as GERMLINE
 sv_bedpe_dedup <- sv_bedpe %>%
   mutate(predicted_class = if_else(SV_DUP_ID %in% svs_groups_to_remove, "GERMLINE", predicted_class)) %>%
-  select(-sv_id, SV_DUP_ID, GROUP_SIZE)
+  select(-sv_id, -SV_DUP_ID, -GROUP_SIZE)
 
 message(paste("After filtering, ", round(pct_recurrent * 100, 2), '% of SVs are recurrent'))
 
